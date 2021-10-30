@@ -1,0 +1,70 @@
+image: ubuntu:20.04
+user: user
+command_prefix: |
+  # Make Bash not silently ignore errors.
+  set -euo pipefail
+
+tasks:
+  install_packages:
+    description: Install system packages.
+    user: root
+    command: |
+      # Install the following packages:
+      #
+      # - curl    - Used for installing Tagref and Typical
+      # - ripgrep - Used for various linting tasks
+      apt-get update
+      apt-get install --yes curl ripgrep
+
+  install_tagref:
+    description: Install Tagref, a reference checking tool.
+    dependencies:
+      - install_packages
+    user: root
+    command: |
+      # Install Tagref using the official installer script.
+      curl https://raw.githubusercontent.com/stepchowfun/tagref/main/install.sh -LSfs | sh
+
+  install_typical:
+    description: Install Typical, an interface definition language.
+    dependencies:
+      - install_packages
+    user: root
+    command: |
+      # Install Typical using the official installer script.
+      curl https://raw.githubusercontent.com/stepchowfun/typical/main/install.sh -LSfs | sh
+
+  create_user:
+    description: Create a user who doesn't have root privileges.
+    user: root
+    command: |
+      # Create a user named `user` with a home directory.
+      adduser --disabled-password --gecos '' user
+
+  install_tools:
+    description: Install the tools needed to build and validate the program.
+    dependencies:
+      - install_tagref
+      - install_typical
+
+  check:
+    description: Run the linters.
+    dependencies:
+      - create_user
+      - install_tools
+    input_paths:
+      - .
+    excluded_input_paths:
+      - .git
+    command: |
+      # Check the schema with Typical.
+      typical generate schema/main.t
+
+      # Check references with Tagref.
+      tagref
+
+      # Enforce that lines span no more than 100 columns.
+      if rg --line-number --glob '*.t' '.{101}' schema; then
+        echo 'There are lines spanning more than 100 columns.' >&2
+        exit 1
+      fi
