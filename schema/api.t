@@ -14,6 +14,6 @@ choice GetObjectResponse {
     # The request was successful.
     success: core.Object = 0
 
-    # The object doesn't exist or the user does not have read permission for it.
+    # The object doesn't exist or the user doesn't have read permission for it.
     denied = 1
 }
