@@ -18,9 +18,10 @@ struct ObjectId {
 
 # This is a node in the graph.
 struct Object {
-    # This timestamp represents when this version of the object was created. If
-    # the `previous` field below is present, then this timestamp must be greater
-    # than or equal to the timestamp of the previous version.
+    # This represents when this version of the object was created.
+    # This timestamp must be greater than or equal to the timestamps of any
+    # objects referred to by the `previous`, `links`, `shortest_read_paths`,
+    # and `shortest_write_paths` fields.
     updated_at: Timestamp = 0
 
     # This is the user who created this version of the object.
@@ -58,7 +59,8 @@ struct Timestamp {
     # second.
     seconds: U64 = 0
 
-    # The fractions of a second at nanosecond resolution.
+    # The fractions of a second at nanosecond resolution. The valid range is
+    # given by the half-open interval [0, 10^9).
     nanoseconds: U64 = 1
 }
 
