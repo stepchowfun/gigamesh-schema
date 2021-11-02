@@ -2,28 +2,28 @@
 # in this file is considered immutable once persisted except where indicated
 # otherwise.
 
-# This type represents the information needed to identify a user.
+# This is the information needed to identify a user.
 struct UserId {
     # A user is identified by 32 bytes chosen uniformly randomly by a
     # cryptographically secure pseudorandom number generator.
     id: Bytes = 0
 }
 
-# This type represents the information needed to identify an object.
+# This is the information needed to identify an object.
 struct ObjectId {
     # An object is identified by 32 bytes chosen uniformly randomly by a
     # cryptographically secure pseudorandom number generator.
     id: Bytes = 0
 }
 
-# This type represents an entity in the graph.
+# This is a node in the graph.
 struct Object {
     # This timestamp represents when this version of the object was created. If
     # the `previous` field below is present, then this timestamp must be greater
     # than or equal to the timestamp of the previous version.
     updated_at: Timestamp = 0
 
-    # This represents the user who created this version of the object.
+    # This is the user who created this version of the object.
     updated_by: UserId = 1
 
     # This is the identifier of the previous version of this object, if it
@@ -42,7 +42,7 @@ struct Object {
     payload: ObjectPayload = 5
 }
 
-# This type represents a point in time.
+# This is a point in time.
 struct Timestamp {
     # Number of seconds since the UNIX Epoch, rounded down to the nearest
     # second.
@@ -52,7 +52,8 @@ struct Timestamp {
     nanoseconds: U64 = 1
 }
 
-# This type represents an incoming or outgoing link.
+# This is an incoming or outgoing link which propagates read or read and write
+# permission.
 choice Link {
     # This is a link from another object to this one that propagates read
     # permission.
@@ -71,7 +72,7 @@ choice Link {
     outgoing_read_and_write: ObjectId = 3
 }
 
-# This type represents the data stored in an object.
+# This is the data stored in an object.
 choice ObjectPayload {
-    # The variants (notes, directories, etc.) have yet to be defined here.
+    # The variants (document, directory, etc.) have yet to be defined here.
 }
