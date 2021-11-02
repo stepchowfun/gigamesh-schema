@@ -35,20 +35,11 @@ struct Object {
     # can undergo up to one mutation: the transition from unset to set.
     optional next: ObjectId = 3
 
-    # The egress of an object is the set of references it holds to other
-    # objects.
-    egress: [ObjectId] = 4
-
-    # The ingress of an object is the set of references other objects hold to
-    # it.
-    ingress: [ObjectId] = 5
-
-    # This field grants permissions for this object and all objects directly
-    # or transitively referenced by it.
-    permission_grants: [PermissionGrant] = 6
+    # These are the incoming and outgoing links. Links propagate permissions.
+    links: [Link] = 4
 
     # This is the data stored with the object.
-    payload: ObjectPayload = 7
+    payload: ObjectPayload = 5
 }
 
 # This type represents a point in time.
@@ -61,16 +52,23 @@ struct Timestamp {
     nanoseconds: U64 = 1
 }
 
-# This type represents a single permission grant.
-choice PermissionGrant {
-    # Grant read permission to the public.
-    public_read = 0
+# This type represents an incoming or outgoing link.
+choice Link {
+    # This is a link from another object to this one that propagates read
+    # permission.
+    incoming_read_only: ObjectId = 0
 
-    # Grant read permission to a specific user.
-    user_read: UserId = 1
+    # This is a link from another object to this one that propagates read and
+    # write permission.
+    incoming_read_and_write: ObjectId = 1
 
-    # Grant read and write permission to a specific user.
-    user_read_and_write: UserId = 2
+    # This is a link from this object to another one that propagates read
+    # permission.
+    outgoing_read_only: ObjectId = 2
+
+    # This is a link from this object to another one that propagates read and
+    # write permission.
+    outgoing_read_and_write: ObjectId = 3
 }
 
 # This type represents the data stored in an object.
