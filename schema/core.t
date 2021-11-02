@@ -38,8 +38,18 @@ struct Object {
     # These are the incoming and outgoing links. Links propagate permissions.
     links: [Link] = 4
 
+    # For each user which has read permission to this object, we keep track of a
+    # shortest path from that user's home object to this object. Note that all
+    # paths propagate read permission.
+    shortest_read_paths: [Path] = 5
+
+    # For each user which has write permission to this object, we keep track of
+    # a shortest write-propagating path from that user's home object to this
+    # object. Note that not all paths propagate write permission.
+    shortest_write_paths: [Path] = 6
+
     # This is the data stored with the object.
-    payload: ObjectPayload = 5
+    payload: ObjectPayload = 7
 }
 
 # This is a point in time.
@@ -70,6 +80,17 @@ choice Link {
     # This is a link from this object to another one that propagates read and
     # write permission.
     outgoing_read_and_write: ObjectId = 3
+}
+
+# This is a path to an object from a user's home object.
+struct Path {
+    # This is the user associated with the home object.
+    user: UserId = 0
+
+    # The path is an array of objects, including the object(s) at the start and
+    # end of the path. The number of objects in this array is equal to the
+    # number of links in the path plus one.
+    path: [ObjectId] = 1
 }
 
 # This is the data stored in an object.
