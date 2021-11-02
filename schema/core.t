@@ -2,6 +2,10 @@
 # in this file is considered immutable once persisted except where indicated
 # otherwise.
 
+# This schema does not describe data which is not stored in blobs: users and
+# locks. Those entities will be stored in a separate database with a relatively
+# uninteresting schema.
+
 # This is the information needed to identify a user.
 struct UserId {
     # A user is identified by 32 bytes chosen uniformly randomly by a
