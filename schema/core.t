@@ -13,48 +13,47 @@ struct UserId {
     id: Bytes = 0
 }
 
-# This is the information needed to identify an object.
-struct ObjectId {
-    # An object is identified by 32 bytes chosen uniformly randomly by a
+# This is the information needed to identify a version of an object.
+struct ObjectVersionId {
+    # An object version is identified by 32 bytes chosen uniformly randomly by a
     # cryptographically secure pseudorandom number generator.
     id: Bytes = 0
 }
 
-# This is a node in the graph.
-struct Object {
-    # This represents when this version of the object was created.
-    # This timestamp must be greater than or equal to the timestamps of any
-    # objects referred to by the `previous`, `links`, `shortest_read_paths`,
-    # and `shortest_write_paths` fields.
+# This is a particular version of an object in the graph.
+struct ObjectVersion {
+    # This timestamp records when this object version was created. It must be
+    # greater than or equal to the timestamps of any object versions referenced
+    # by the other fields below.
     updated_at: Timestamp = 0
 
-    # This is the user who created this version of the object.
+    # This is the user who created this object version.
     updated_by: UserId = 1
 
-    # This is the identifier of the previous version of this object, if it
-    # exists. Otherwise, this is the first version of the object.
-    optional previous: ObjectId = 2
+    # This is the identifier of the previous version of the object, if it
+    # exists.
+    optional previous: ObjectVersionId = 2
 
-    # This is the identifier of the subsequent version of this object, if it
-    # exists. Otherwise, this is the latest version of the object. This field
-    # can undergo up to one mutation: the transition from unset to set.
-    optional next: ObjectId = 3
+    # This is the identifier of the subsequent version of the object, if it
+    # exists. This field can undergo up to one mutation: the transition from
+    # unset to set.
+    optional next: ObjectVersionId = 3
 
-    # These are the incoming and outgoing links. Links propagate permissions.
-    links: [Link] = 4
+    # Incoming links propagate permissions from other objects to this object.
+    incoming_links: [Link] = 4
 
-    # For each user which has read permission to this object, we keep track of a
-    # shortest path from that user's home group to this object. Note that all
-    # paths propagate read permission.
-    shortest_read_paths: [Path] = 5
+    # Outgoing links propagate permissions from this object to other objects.
+    outgoing_links: [Link] = 5
 
-    # For each user which has write permission to this object, we keep track of
-    # a shortest write-propagating path from that user's home group to this
-    # object. Note that not all paths propagate write permission.
-    shortest_write_paths: [Path] = 6
+    # We record a chain for each user who has read permission to this object.
+    read_chains: [Chain] = 6
 
-    # This is the data stored with the object.
-    payload: ObjectPayload = 7
+    # We record a write-propagating chain for each user who has write permission
+    # to this object version.
+    write_chains: [Chain] = 7
+
+    # This is the data stored with the object version.
+    payload: ObjectVersionPayload = 8
 }
 
 # This is a point in time.
@@ -68,38 +67,28 @@ struct Timestamp {
     nanoseconds: U64 = 1
 }
 
-# This is an incoming or outgoing link which propagates read or read and write
-# permission.
+# This is link. The link may be incoming or outgoing, determined from context.
 choice Link {
-    # This is a link from another object to this one that propagates read
-    # permission.
-    incoming_read_only: ObjectId = 0
+    # The link propagates read permission only.
+    propagate_read: ObjectVersionId = 0
 
-    # This is a link from another object to this one that propagates read and
-    # write permission.
-    incoming_read_and_write: ObjectId = 1
-
-    # This is a link from this object to another one that propagates read
-    # permission.
-    outgoing_read_only: ObjectId = 2
-
-    # This is a link from this object to another one that propagates read and
-    # write permission.
-    outgoing_read_and_write: ObjectId = 3
+    # The link propagates both read and write permission.
+    propagate_read_and_write: ObjectVersionId = 1
 }
 
-# This is a path to an object from a user's home group.
-struct Path {
+# A chain is a shortest path from a user's home group to an object version.
+struct Chain {
     # This is the user associated with the home group.
     user: UserId = 0
 
-    # The path is an array of objects, including the object(s) at the start and
-    # end of the path. The number of objects in this array is equal to the
-    # number of links in the path plus one.
-    path: [ObjectId] = 1
+    # The chain is represented by an array of object versions, including the
+    # object version(s) at the start and end of the chain. The number of object
+    # versions in this array is equal to the number of links in the chain plus
+    # one. The links themselves are not stored explicitly.
+    chain: [ObjectVersionId] = 1
 }
 
-# This is the data stored in an object.
-choice ObjectPayload {
+# This is the payload stored in an object version.
+choice ObjectVersionPayload {
     # The variants (document, directory, etc.) have yet to be defined here.
 }
