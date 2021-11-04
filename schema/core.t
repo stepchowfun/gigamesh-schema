@@ -1,4 +1,4 @@
-# The data described by this schema are persisted to blob storage. Every field
+# The data described by this schema are persisted to blob storage. Everything
 # in this file is considered immutable once persisted except where indicated
 # otherwise.
 
