@@ -44,12 +44,12 @@ struct Object {
     links: [Link] = 4
 
     # For each user which has read permission to this object, we keep track of a
-    # shortest path from that user's home object to this object. Note that all
+    # shortest path from that user's home group to this object. Note that all
     # paths propagate read permission.
     shortest_read_paths: [Path] = 5
 
     # For each user which has write permission to this object, we keep track of
-    # a shortest write-propagating path from that user's home object to this
+    # a shortest write-propagating path from that user's home group to this
     # object. Note that not all paths propagate write permission.
     shortest_write_paths: [Path] = 6
 
@@ -88,9 +88,9 @@ choice Link {
     outgoing_read_and_write: ObjectId = 3
 }
 
-# This is a path to an object from a user's home object.
+# This is a path to an object from a user's home group.
 struct Path {
-    # This is the user associated with the home object.
+    # This is the user associated with the home group.
     user: UserId = 0
 
     # The path is an array of objects, including the object(s) at the start and
