@@ -46,6 +46,7 @@ tasks:
     dependencies:
       - install_tagref
       - install_typical
+    user: root
 
   check:
     description: Run the linters.
@@ -60,6 +61,9 @@ tasks:
       # Check the schema with Typical.
       typical generate schema/main.t
 
+      # Check the schema formatting with Typical.
+      typical format --check schema/main.t
+
       # Check references with Tagref.
       tagref
 
@@ -68,3 +72,16 @@ tasks:
         echo 'There are lines spanning more than 100 columns.' >&2
         exit 1
       fi
+
+  format:
+    description: Format the schema files.
+    dependencies:
+      - create_user
+      - install_tools
+    input_paths:
+      - schema
+    output_paths:
+      - schema
+    command: |
+      # Format schemas with Typical.
+      typical format schema/main.t
