@@ -1,7 +1,7 @@
 # The data described by this schema are persisted to blob storage. Everything
 # in this file is considered immutable once persisted except where indicated
 # otherwise.
-
+#
 # This schema does not describe data which is not stored in blobs: users and
 # locks. Those entities will be stored in a separate database with a relatively
 # uninteresting schema.
@@ -15,8 +15,8 @@ struct UserId {
 
 # This is the information needed to identify a version of an object.
 struct ObjectVersionId {
-    # An object version is identified by 32 bytes chosen uniformly randomly by a
-    # cryptographically secure pseudorandom number generator.
+    # An object version is identified by 32 bytes chosen uniformly randomly by
+    # a cryptographically secure pseudorandom number generator.
     id: Bytes = 0
 }
 
@@ -48,8 +48,8 @@ struct ObjectVersion {
     # We record a chain for each user who has read permission to this object.
     read_chains: [Chain] = 6
 
-    # We record a write-propagating chain for each user who has write permission
-    # to this object version.
+    # We record a write-propagating chain for each user who has write
+    # permission to this object version.
     write_chains: [Chain] = 7
 
     # This is the data stored with the object version.
@@ -88,7 +88,7 @@ struct Chain {
     chain: [ObjectVersionId] = 1
 }
 
-# This is the payload stored in an object version.
+# This is the payload stored in an object version. The variants (document,
+# directory, etc.) have yet to be defined here.
 choice ObjectVersionPayload {
-    # The variants (document, directory, etc.) have yet to be defined here.
 }
