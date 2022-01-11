@@ -60,10 +60,10 @@ tasks:
       - .git
     command: |
       # Check the schema with Typical.
-      typical generate schema/main.t
+      typical generate schema/types.t
 
       # Check the schema formatting with Typical.
-      typical format --check schema/main.t
+      typical format --check schema/types.t
 
       # Check references with Tagref.
       tagref
@@ -85,4 +85,4 @@ tasks:
       - schema
     command: |
       # Format schemas with Typical.
-      typical format schema/main.t
+      typical format schema/types.t
